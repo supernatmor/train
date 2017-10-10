@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Train Train</title>
+    <!--  jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- LINK TO FIREBASE GOES HERE -->
+    <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+    <style type="text/css">
+    .jumbotron {
+        background: #337ab7;
+        color: white;
+    }
+
+    .panel-heading {
+        background: navy;
+        color: white;
+        margin-top: -1px;
+        margin-left: -1px;
+    }
+
+
+
+    .result-card {
+        background-color: #ecf0f1;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <br>
+        <!-- Jumbotron -->
+        <div class="row">
+            <div class="jumbotron">
+                <h1 class="text-center">Train Schedule</h1>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Sign-Up Panel-->
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Add New Train</h3>
+                </div>
+                <div class="panel-body">
+                    <!-- Sign-up Form (note the various input "types")-->
+                    <form role="form">
+                        <div class="form-group">
+                            <label for="name-input">Train Name:</label>
+                            <input class="form-control" id="name-input" type="text" style="color:#888;" value="Train Name" onfocus="inputFocus(this)" onblur="inputBlur(this)">
+                        </div>
+                        <div class="form-group">
+                            <label for="text-input">Destination:</label>
+                            <input class="form-control" id="destination-input" type="text" style="color:#888;" value=" Destination" onfocus="inputFocus(this)" onblur="inputBlur(this)">
+                        </div>
+                        <div class="form-group">
+                            <label for="sDate-input">First Departure: </label>
+                            <input class="form-control" id="first-input" type="time" style="color:#888;" value="First Departure Time" onfocus="inputFocus(this)" onblur="inputBlur(this)">
+                        </div>
+                        <div class="form-group">
+                            <label for="age-input">Frequency: </label>
+                            <input class="form-control" id="freq-input" type="number">
+                        </div>
+                        <button class="btn btn-primary" id="add-employee" type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">All Entries</h3>
+                </div>
+                <div class="panel-body" id="all">
+                </div>
+                <table class="table" id="results">
+                </table>
+            </div>
+        </div>
+        <!-- Most Recent Member Panel -->
+    </div>
+    <!-- Script -->
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+    <script>
+    function inputFocus(i) {
+        if (i.value == i.defaultValue) {
+            i.value = "";
+            i.style.color = "#000";
+        }
+    }
+
+    function inputBlur(i) {
+        if (i.value == "") {
+            i.value = i.defaultValue;
+            i.style.color = "#888";
+        }
+    }
+    // ========================================== START CODING BELOW!!
+
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyBxIO8aGOvqXZXrjAqe2AWc1ntOmgXzaQw",
+        authDomain: "test-39dec.firebaseapp.com",
+        databaseURL: "https://test-39dec.firebaseio.com",
+        projectId: "test-39dec",
+        storageBucket: "test-39dec.appspot.com",
+        messagingSenderId: "48744041889"
+    };
+    firebase.initializeApp(config);
+
+    // Create a variable to reference the database.
+    var database = firebase.database();
+
+    // Initial Values
+    var name = "";
+    var destination = "";
+    var first = 0;
+    var freq = "";
+    var next = "";
+    var mAWay = "";
+    var cTime = "";
+
+    // Capture Button Click
+    $("#add-employee").on("click", function(event) {
+        event.preventDefault();
+
+
+
+        // Grabbed values from text boxes
+        name = $("#name-input").val().trim();
+        destination = $("#destination-input").val().trim();
+        first = $("#first-input").val().trim();
+        freq = $("#freq-input").val().trim();
+        //console.log(first);
+
+        //console.log(cDate);
+        //next = moment(cDate).diff(moment(), "next");
+
+        //console.log(next);
+
+        // Code for handling the push
+        database.ref().push({
+            name: name,
+            destination: destination,
+            first: first,
+            freq: freq,
+            dateAdded: firebase.database.ServerValue.TIMESTAMP
+        });
+
+    });
+
+    // Firebase watcher + initial loader + order/limit HINT: .on("child_added"
+    database.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function(snapshot) {
+        // storing the snapshot.val() in a variable for convenience
+        var sv = snapshot.val();
+
+        // Console.loging the last user's data
+        //console.log(sv.name);
+        //console.log(sv.destination);
+        //console.log(sv.first);
+        //console.log(sv.freq);
+
+        // Change the HTML to reflect
+        $("#name-display").html(sv.name);
+        $("#destination-display").html(sv.destination);
+        $("#first-display").html(sv.first);
+        $("#freq-display").html(sv.freq);
+
+
+
+
+
+        // Handle the errors
+    }, function(errorObject) {
+        console.log("Errors handled: " + errorObject.code);
+    });
+
+    database.ref().on("child_added", function(snapshot) {
+        var sv = snapshot.val();
+        //console.log(sv);
+        var record = $("<div>");
+
+        cTime = moment(sv.first).format("MMM Do, YYYY hh:mm:ss");
+        console.log(cTime);
+        next = moment().diff(moment(freq), "minutes");
+        mAWay = next * sv.freq;
+
+        record.addClass("result-card");
+        record.append("Name: " + sv.name + " | Destination: " + sv.destination + " | First Departure: " + sv.first + " | Frequency: " + sv.freq + " | Next Arrival: " + next + " | Minutes Away: " + mAWay)
+        $("#all").append(record);
+    })
+    </script>
+</body>
+
+</html>
