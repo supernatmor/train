@@ -8,85 +8,99 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
     <style type="text/css">
+    body {
+        background-image: url("https://ak6.picdn.net/shutterstock/videos/1905526/thumb/1.jpg?i10c=img.resize(height:160)");
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: 100% 100%;
+    }
+
     .jumbotron {
         background: #337ab7;
         color: white;
         text-align: center;
     }
 
+    .jumbo {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .panel {
+        border-width: 1px;
+        
+    }
     .panel-heading {
         background: navy;
         color: white;
-        margin-top: -1px;
-        margin-left: -1px;
+        margin-top: -.5px;
+        margin-left: -.5px;
+        margin-right: -.5px;
     }
 
-    .result-card {
-        background-color: #ecf0f1;
-        border-radius: 5px;
-        padding: 10px;
-        margin-bottom: 10px;
+    table,
+    th,
+    td {
+        text-align: center;
     }
-table, th, td {
-    text-align: center;
-}
-
     </style>
 </head>
 
 <body>
     <div class="container">
         <br>
-        <div class="row">
+        <div class="row jumbo">
             <div class="jumbotron">
                 <h1 class="text-center">Train Schedule</h1>
-                <h3><div id="now"></div></h3>
+                <h2><div id="now"></div></h2>
             </div>
         </div>
         <div class="row">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Add New Train</h3>
-                </div>
-                <div class="panel-body">
-                    <form role="form">
-                        <div class="form-group">
-                            <label for="name-input">Train Name:</label>
-                            <input class="form-control" id="name-input" type="text" style="color:#888;" value="Train Name" onfocus="inputFocus(this)" onblur="inputBlur(this)">
-                        </div>
-                        <div class="form-group">
-                            <label for="text-input">Destination:</label>
-                            <input class="form-control" id="destination-input" type="text" style="color:#888;" value=" Destination" onfocus="inputFocus(this)" onblur="inputBlur(this)">
-                        </div>
-                        <div class="form-group">
-                            <label for="sDate-input">First Departure: </label>
-                            <input class="form-control" id="first-input" type="time" name="time" style="color:#888;" value="First Departure Time" onfocus="inputFocus(this)" onblur="inputBlur(this)">
-                        </div>
-                        <div class="form-group">
-                            <label for="age-input">Frequency: </label>
-                            <input class="form-control" id="freq-input" type="number">
-                        </div>
-                        <button class="btn btn-primary" id="add-train" type="submit">Submit</button>
-                    </form>
+            <div class="col-sm-12 col-lg-3">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Add New Train</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="name-input">Train Name:</label>
+                                <input class="form-control" id="name-input" type="text" style="color:#888;" value="Train Name" onfocus="inputFocus(this)" onblur="inputBlur(this)">
+                            </div>
+                            <div class="form-group">
+                                <label for="text-input">Destination:</label>
+                                <input class="form-control" id="destination-input" type="text" style="color:#888;" value=" Destination" onfocus="inputFocus(this)" onblur="inputBlur(this)">
+                            </div>
+                            <div class="form-group">
+                                <label for="sDate-input">First Departure: </label>
+                                <input class="form-control" id="first-input" type="time" name="time" style="color:#888;" value="First Departure Time" onfocus="inputFocus(this)" onblur="inputBlur(this)">
+                            </div>
+                            <div class="form-group">
+                                <label for="age-input">Frequency: </label>
+                                <input class="form-control" id="freq-input" type="number">
+                            </div>
+                            <button class="btn btn-primary" id="add-train" type="submit">Submit</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Train Schedule</h3>
-                </div>
-                <div class="panel-body">
-                    <table class="table" id="results">
-                        <tr>
-                            <th>Name</th>
-                            <th>Destination</th>
-                            <th>First Departure</th>
-                            <th>Frequency</th>
-                            <th>Next Arrival</th>
-                            <th>Minutes Away</th>
-                        </tr>
-                    </table>
+            <div class="col-sm-12 col-lg-9">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Train Schedule</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table" id="results">
+                            <tr>
+                                <th>Name</th>
+                                <th>Destination</th>
+                                <th>First Departure</th>
+                                <th>Frequency</th>
+                                <th>Next Arrival</th>
+                                <th>Minutes Away</th>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,7 +120,6 @@ table, th, td {
             i.style.color = "#888";
         }
     }
-    // ========================================== START CODING BELOW!!
 
     // Initialize Firebase
     var config = {
@@ -141,6 +154,7 @@ table, th, td {
         first = $("#first-input").val().trim();
         freq = $("#freq-input").val().trim();
 
+        document.getElementById("name-input").reset();
 
         database.ref().push({
             name: name,
@@ -186,7 +200,7 @@ table, th, td {
             var tNext = $("<td>").html(moment(next).format("HH:mm")).appendTo(record);
             var tAway = $("<td>").html(mAway).appendTo(record);
 
-            
+
             $("#results").append(record);
         })
     }
