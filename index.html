@@ -27,11 +27,10 @@
         padding: 10px;
         margin-bottom: 10px;
     }
+table, th, td {
+    text-align: center;
+}
 
-    tr,
-    th {
-        text-align: center;
-    }
     </style>
 </head>
 
@@ -75,9 +74,9 @@
         <div class="row">
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">All Entries</h3>
+                    <h3 class="panel-title">Train Schedule</h3>
                 </div>
-                <div class="panel-body" id="all">
+                <div class="panel-body">
                     <table class="table" id="results">
                         <tr>
                             <th>Name</th>
@@ -152,44 +151,48 @@
 
     });
 
-
-    database.ref().on("child_added", function(snapshot) {
-        var sv = snapshot.val();
-        //console.log(sv.first);
-        //console.log(sv.freq);
-        first = moment(sv.first, "HH:mm").subtract(1, "days");
-        //console.log(first);
-        var diff = moment().diff(moment(first), 'minutes');
-        //console.log(diff);
-        var tMod = diff % sv.freq;
-        mAway = sv.freq - tMod;
-        next = moment().add(mAway, "minutes");
-        //console.log(next);
+    function updatePage() {
+        //emptys results table every time function is called, stops result stacking
+        $("#results").empty();
+        $("#results").append("<tr><th>Name</th><th>Destination</th><th>First Departure</th><th>Frequency</th><th>Next Arrival</th><th>Minutes Away</th></tr>")
 
 
-
-        var record = $("<tr>");
-        var tName = $("<td>").html(sv.name).appendTo(record);
-        var tDest = $("<td>").html(sv.destination).appendTo(record);
-        var tFirst = $("<td>").html(sv.first).appendTo(record);
-        var tFreq = $("<td>").html(sv.freq).appendTo(record);
-        var tNext = $("<td>").html(moment(next).format("HH:mm")).appendTo(record);
-        var tAway = $("<td>").html(mAway).appendTo(record);
-
-        $("#results").append(record);
-    })
-
-
-
-
-
-    //simple clock for time check at top of page
-    function showTime () {
+        //runs a simple clock at the top of the page
         $("#now").empty();
         now = moment();
         $("#now").html(moment(now).format("HH:mm:ss"));
+
+        //reads database and updates results table
+        database.ref().on("child_added", function(snapshot) {
+            var sv = snapshot.val();
+            //console.log(sv.first);
+            //console.log(sv.freq);
+            first = moment(sv.first, "HH:mm").subtract(1, "days");
+            //console.log(first);
+            var diff = moment().diff(moment(first), 'minutes');
+            //console.log(diff);
+            var tMod = diff % sv.freq;
+            mAway = sv.freq - tMod;
+            next = moment().add(mAway, "minutes");
+            //console.log(next);
+
+
+
+            var record = $("<tr>");
+            var tName = $("<td>").html(sv.name).appendTo(record);
+            var tDest = $("<td>").html(sv.destination).appendTo(record);
+            var tFirst = $("<td>").html(sv.first).appendTo(record);
+            var tFreq = $("<td>").html(sv.freq).appendTo(record);
+            var tNext = $("<td>").html(moment(next).format("HH:mm")).appendTo(record);
+            var tAway = $("<td>").html(mAway).appendTo(record);
+
+            
+            $("#results").append(record);
+        })
     }
-    setInterval(showTime, 1000);
+
+    //runs main function every second, updates clock and schedule table
+    setInterval(updatePage, 1000);
     </script>
 </body>
 
